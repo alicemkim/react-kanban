@@ -11,9 +11,12 @@ import {
   useSensors,
   DragOverlay,
   closestCorners,
-  type DragStartEvent,
 } from '@dnd-kit/core';
-import type { ColumnStatus } from '../KanbanBoardColumns/KanbanBoardColumns.types';
+import type { DragOverEvent, DragStartEvent } from '@dnd-kit/core';
+import type {
+  Column,
+  ColumnStatus,
+} from '../KanbanBoardColumns/KanbanBoardColumns.types';
 import type { Ticket } from './KanbanBoard.types';
 import { SEED_ITEMS } from './KanbanBoard.const';
 
@@ -36,27 +39,36 @@ export default function KanbanBoard() {
   );
 
   const handleDragStart = ({ active }: DragStartEvent) => {
-    console.log('handleDragStart active: ');
     const found = tickets.find((ticket) => ticket.id === active.id);
     setActiveTicket(found ?? null);
   };
 
   const handleDragOver = ({ active, over }: DragOverEvent) => {
-    console.log('implement me');
+    if (!over) return;
+
+    const activeTicket = tickets.find((t) => t.id === active.id);
+    const overIsCol = COLUMNS.some((c) => c.id === over.id);
+    const overTicket = tickets.find((t) => t.id === over.id);
+    const targetCol = overIsCol
+      ? (over.id as ColumnStatus)
+      : overTicket?.status;
+
+    if (!targetCol || activeTicket?.status === targetCol) return;
+
+    setTickets((prev) =>
+      prev.map((t) => (t.id === active.id ? { ...t, status: targetCol } : t)),
+    );
   };
 
-  const handleDragEnd = ({ active, over }) => {
-    console.log('Implement me');
+  const handleDragEnd = () => {
+    setActiveTicket(null);
   };
 
   const getTicketsByColumn = useCallback(
-    (colStatus: ColumnStatus) =>
-      tickets.filter((ticket) => {
-        console.log({ colStatus, ticket });
-        return ticket.status === colStatus;
-      }),
+    (colId: ColumnStatus) => tickets.filter((t) => t.status === colId),
     [tickets],
   );
+
   return (
     <DndContext
       sensors={sensors}
@@ -71,7 +83,7 @@ export default function KanbanBoard() {
             <KanbanBoardColumns
               key={column.id}
               column={column}
-              tickets={getTicketsByColumn(column.status)}
+              tickets={getTicketsByColumn(column.id as ColumnStatus)}
               // onDelete={handleDelete}
             />
           );

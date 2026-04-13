@@ -2,6 +2,10 @@ import { useDroppable } from '@dnd-kit/core';
 import type { Ticket } from '../KanbanBoard/KanbanBoard.types';
 import type { Column } from './KanbanBoardColumns.types';
 import KanbanTicketCard from '../KanbanTicketCard/KanbanTicketCard';
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
 
 type Props = {
   column: Column;
@@ -20,11 +24,16 @@ export default function KanbanBoardColumns({ column, tickets = [] }: Props) {
 
       {/* Body */}
       <div ref={setNodeRef}>
-        <div className='flex flex-col gap-2'>
-          {tickets.map((ticket) => {
-            return <KanbanTicketCard ticket={ticket} key={ticket.id} />;
-          })}
-        </div>
+        <SortableContext
+          items={tickets.map((t) => t.id)}
+          strategy={verticalListSortingStrategy}
+        >
+          <div className='flex flex-col gap-2'>
+            {tickets.map((ticket) => {
+              return <KanbanTicketCard ticket={ticket} key={ticket.id} />;
+            })}
+          </div>
+        </SortableContext>
       </div>
     </div>
   );
