@@ -15,7 +15,12 @@ export default function KanbanTicketCard({ ticket }: Props) {
     isDragging,
   } = useSortable({ id: ticket.id });
   return (
-    <div ref={setNodeRef} {...attributes} {...listeners}>
+    <div
+      className='cursor-grab active:cursor-grabbing'
+      ref={setNodeRef}
+      {...attributes}
+      {...listeners}
+    >
       <div>{ticket.title}</div>
       <div>{ticket.description}</div>
     </div>
