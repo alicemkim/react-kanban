@@ -1,10 +1,12 @@
 import './App.css';
-import KanbanBoard from './components/KanbanBoard';
+import { KanbanBoard } from './components';
 
 function App() {
   return (
-    <div className='mx-auto'>
-      <h3>Kanban Board</h3>
+    <div className='flex flex-col items-center p-4'>
+      <header className='items-center'>
+        <h2>Kanban Board</h2>
+      </header>
       <KanbanBoard />
     </div>
   );
